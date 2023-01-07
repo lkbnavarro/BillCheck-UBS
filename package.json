@@ -1,0 +1,16 @@
+{
+  "name": "qualitychecker",
+  "version": "1.0.0",
+  "description": "comparison check to ensure quality of billing report",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Laurence Kobe Navarro",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^22.0.0",
+    "exceljs": "^4.3.0",
+    "path": "^0.12.7"
+  }
+}
