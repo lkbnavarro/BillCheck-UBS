@@ -1,11 +1,10 @@
 const path = require('path');
 const {app, BrowserWindow } = require('electron');
 
+
 const isDev = process.env.NODE_ENV !=='development';
 
 //app.disableHardwareAcceleration()
-
-
 
 function createMainWindow() {
     const mainWindow = new BrowserWindow({
@@ -24,7 +23,7 @@ function createMainWindow() {
         mainWindow.webContents.openDevTools();
     } 
 
-    mainWindow.loadFile(path.join(__dirname, './renderer/index.html')); 
+    mainWindow.loadFile(path.join(__dirname, './assets/html/index.html')); 
     
 }
 

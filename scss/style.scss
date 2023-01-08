@@ -1,0 +1,45 @@
+@use 'custom';
+
+// import components
+@use 'components/animations';
+@use 'components/buttons';
+@use 'components/mixins';
+@use 'components/typography';
+
+// import sections
+@use 'sections/about';
+@use 'sections/docs';
+@use 'sections/home';
+@use 'sections/navbar';
+
+
+*{
+    margin: 2px;
+}
+
+.font-nav{
+    font-size:22px;
+    font-weight: bold;
+}
+
+.btn-spacing{
+    margin-bottom:12px;
+    margin-left: 30px;
+}
+
+.out-btn-spacing{
+    margin-top:30px;
+    margin-left: 30px;
+    margin-bottom:12px;
+
+}
+
+.navbar-color{
+    background-color: white;
+}
+
+.navbar-margin{
+    margin: 2px 6px 2px 6px;
+}
+
+
