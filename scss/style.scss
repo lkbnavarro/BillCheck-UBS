@@ -14,7 +14,7 @@
 
 
 *{
-    margin: 2px;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
 }
 
 .font-nav{
@@ -22,17 +22,38 @@
     font-weight: bold;
 }
 
-.btn-spacing{
-    margin-bottom:12px;
-    margin-left: 30px;
+.font-menu{
+    font-weight: bold;
+}
+
+.grid-spacing{
+    margin-bottom:7px;
+    margin-top:7px;
+}
+
+.path-spacing{
+    margin: 10px;
+}
+
+
+.pwa-spacing{
+    margin: 3px 0 3px 0;
+}
+
+.gen-spacing{
+    margin-top:10px;
+}
+
+.clear-spacing{
+    margin: 10px 0 0 10px;
 }
 
 .out-btn-spacing{
     margin-top:30px;
     margin-left: 30px;
     margin-bottom:12px;
-
 }
+
 
 .navbar-color{
     background-color: white;
