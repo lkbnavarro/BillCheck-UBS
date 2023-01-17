@@ -13,17 +13,23 @@
 @use 'sections/navbar';
 
 
-*{
+* {
+    margin: 0px;
+    padding: 0px;
     font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
 }
 
 .font-nav{
-    font-size:22px;
-    font-weight: bold;
+    font-weight:bolder;
+    color: #552586 !important;
 }
 
-.font-menu{
-    font-weight: bold;
+.font-link{
+    font-weight:bold;
+}
+
+.image-margin{
+    margin: 0 10px 0 10px;
 }
 
 .grid-spacing{
@@ -32,7 +38,7 @@
 }
 
 .path-spacing{
-    margin: 10px;
+    margin: 12px 9px 12px 9px;
 }
 
 
@@ -48,19 +54,13 @@
     margin: 10px 0 0 10px;
 }
 
-.out-btn-spacing{
-    margin-top:30px;
-    margin-left: 30px;
-    margin-bottom:12px;
+.menu-bar{
+    background-image: linear-gradient(-90deg, #552586, #fff);
 }
 
-
-.navbar-color{
-    background-color: white;
+.nav-link{
+    margin:3px;
+    font-size: 3px;
+    color: #fff !important;
 }
-
-.navbar-margin{
-    margin: 2px 6px 2px 6px;
-}
-
 
