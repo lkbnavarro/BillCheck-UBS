@@ -63,7 +63,7 @@ function getFileWorksheetJson(fileId, sheetName) {
 
 function getServiceBillingJson(){
   // Read Excel Files for SBR
-  // Get data that has index only on column 1
+  // Get data that has number on column 1
   return getFileWorksheetJson("file-1", "Resource Reporting - MC")
   .filter((item) => typeof item['__EMPTY_1'] === 'number')
 };
@@ -78,42 +78,38 @@ function getResourceTrendJson(){
   return getFileWorksheetJson("file-4", "Raw Data")
 };
 
-function createOutput(sbrFileJson, resourceListJson, resourceTrendJson) {
-  return sbrFileJson.map((item) => {
-    const output = {
-      
-    }
-    let fullName = item['__EMPTY_6']
-    let onshoreRate = item['__EMPTY_13']
-    let offshoreRate = item['__EMPTY_14']
+function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
+  return sbrFileJson.map((data) => {
+    const row = {}
+    let fullName = data['__EMPTY_6']
+    let onshoreRate = data['__EMPTY_13']
+    let offshoreRate = data['__EMPTY_14']
     let enterpriceId = getEnterpriseId(fullName, resourceListJson)
     let grossAmount = calculateGrossAmount(onshoreRate, offshoreRate)
     let volDiscount = calculateVolDiscount(grossAmount)
 
-    output['STREAM'] = item['__EMPTY_2']
-    output['Enterprise ID'] = enterpriceId
-    output['Hermes Role'] = item['__EMPTY_7']
-    output['Hermes Level'] = item['__EMPTY_8']
-    output['Location Category'] = item['__EMPTY_9']
-    output['Daily Rate (Onshore)'] = onshoreRate
-    output['Daily Rate (Offshore)'] = offshoreRate
-    output['Billable Hours A'] = item['__EMPTY_24']
-    output['Billable Days A'] = item['__EMPTY_25']
-    output['Gross Amount A'] = grossAmount
-    output['Vol. Discount'] = volDiscount
-    output['Strategic Innov. Fund'] = "N/A"
-    output['Net Amount A'] = "N/A"
-    output['Bill Rate'] = "N/A"
-    output['Billable Hours B'] = "N/A"
-    output['Billable Days B'] = "N/A"
-    output['Gross Amount B'] = "N/A"
-    output['Net Amount B'] = "N/A"
-    output['Billable Days C'] = "N/A"
-    output['Net Amount C'] = "N/A"
+    row['STREAM'] = data['__EMPTY_2']
+    row['Enterprise ID'] = enterpriceId
+    row['Hermes Role'] = data['__EMPTY_7']
+    row['Hermes Level'] = data['__EMPTY_8']
+    row['Location Category'] = data['__EMPTY_9']
+    row['Daily Rate (Onshore)'] = onshoreRate
+    row['Daily Rate (Offshore)'] = offshoreRate
+    row['Billable Hours A'] = data['__EMPTY_24']
+    row['Billable Days A'] = data['__EMPTY_25']
+    row['Gross Amount A'] = grossAmount
+    row['Vol. Discount'] = volDiscount
+    row['Strategic Innov. Fund'] = "N/A"
+    row['Net Amount A'] = "N/A"
+    row['Bill Rate'] = "N/A"
+    row['Billable Hours B'] = "N/A"
+    row['Billable Days B'] = "N/A"
+    row['Gross Amount B'] = "N/A"
+    row['Net Amount B'] = "N/A"
+    row['Billable Days C'] = "N/A"
+    row['Net Amount C'] = "N/A"
     
-    console.log(output)
-    console.log("")
-    return output
+    return row
   })
 }
 
@@ -128,7 +124,7 @@ function calculateGrossAmount(onshoreRate, offshoreRate) {
 
 function calculateVolDiscount(grossAmount) {
   let percentage = 5.15
-  let percentageToMultiplier =  (percentage / 100);
+  let percentageToMultiplier = (percentage / 100);
   return grossAmount * percentageToMultiplier
 }
 
@@ -136,12 +132,12 @@ function createExcel() {
     let serviceBillingJson = getServiceBillingJson();
     let resourceListJson = getResourceListJson();
     let resourceTrendJson = getResourceTrendJson()
-    let outputJson = createOutput(serviceBillingJson, resourceListJson, resourceTrendJson)
+    let outputJson = createRows(serviceBillingJson, resourceListJson, resourceTrendJson)
     
     var workbook = xlsx.utils.book_new();
     var worksheet = xlsx.utils.json_to_sheet(outputJson);
     xlsx.utils.book_append_sheet(workbook, worksheet, "testSheet");
-    xlsx.writeFile(workbook, "/helloTest/textBook.xlsx");
+    xlsx.writeFile(workbook, "textBook.xlsx");
 }
 
 
