@@ -36,7 +36,6 @@ function pushFile(fileNumber, filePath) {
       }
   }
 }
-  
 // const outputHeader = ["STREAM", "Enterprise ID", "Hermes Role", "Hermes Level", "Location Category", "Daily Rate (Onshore)", "Daily Rate (Onshore)",
 // "Billable Hours (SBR)", "Billable Days (SBR)", "Gross Amount", "Net Amount", "Bill Rate (MME)", "Billable Days (MME)", "Gross Amount", "Net Amount",
 // "Billable Days (Var)", "Net Amount (Var)"];
@@ -90,8 +89,9 @@ function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
     let strategicInnovFund = calculateStrategicInnovFund(grossAmount, volDiscount)
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
     let hours = getHours(enterpriseId, resourceTrendJson)
+    let stream = getStream(data['__EMPTY_2'])
 
-    row['STREAM'] = data['__EMPTY_2']
+    row['STREAM'] = stream
     row['Enterprise ID'] = enterpriseId
     row['Hermes Role'] = data['__EMPTY_7']
     row['Hermes Level'] = data['__EMPTY_8']
@@ -129,6 +129,10 @@ function getBillrate(enterpriseId, resourceTrendJson) {
 function getHours(enterpriseId, resourceTrendJson) {
   let resourceItem = resourceTrendJson.find((item) => item["Name"] == enterpriseId && item["Category"] == "Hours")
   return resourceItem?.['Quantity'] || "N/A"
+}
+
+function getStream(stream) {
+  return (stream == 'PAY & MANAGE LIQUIDITY') ? 'INNOVATION INITIATIVES' : stream
 }
 
 function calculateGrossAmount(onshoreRate, offshoreRate) {
