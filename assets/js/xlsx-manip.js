@@ -83,13 +83,15 @@ function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
     let fullName = data['__EMPTY_6']
     let onshoreRate = data['__EMPTY_13']
     let offshoreRate = data['__EMPTY_14']
+    let billableDays = data['__EMPTY_25']
     let enterpriseId = getEnterpriseId(fullName, resourceListJson)
-    let grossAmount = calculateGrossAmount(onshoreRate, offshoreRate)
+    let grossAmount = calculateGrossAmount(onshoreRate, offshoreRate, billableDays)
     let volDiscount = calculateVolDiscount(grossAmount)
     let strategicInnovFund = calculateStrategicInnovFund(grossAmount, volDiscount)
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
     let hours = getHours(enterpriseId, resourceTrendJson)
     let stream = getStream(data['__EMPTY_2'])
+   
 
     row['STREAM'] = stream
     row['Enterprise ID'] = enterpriseId
@@ -135,8 +137,8 @@ function getStream(stream) {
   return (stream == 'PAY & MANAGE LIQUIDITY') ? 'INNOVATION INITIATIVES' : stream
 }
 
-function calculateGrossAmount(onshoreRate, offshoreRate) {
-  return (onshoreRate * 1) + (offshoreRate * 1)
+function calculateGrossAmount(onshoreRate, offshoreRate, billableDays) {
+  return (onshoreRate * billableDays) + (offshoreRate * billableDays)
 }
 
 function calculateVolDiscount(grossAmount) {
