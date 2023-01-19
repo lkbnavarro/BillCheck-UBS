@@ -84,12 +84,15 @@ function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
     let fullName = data['__EMPTY_6']
     let onshoreRate = data['__EMPTY_13']
     let offshoreRate = data['__EMPTY_14']
-    let enterpriceId = getEnterpriseId(fullName, resourceListJson)
+    let enterpriseId = getEnterpriseId(fullName, resourceListJson)
     let grossAmount = calculateGrossAmount(onshoreRate, offshoreRate)
     let volDiscount = calculateVolDiscount(grossAmount)
+    let strategicInnovFund = calculateStrategicInnovFund(grossAmount, volDiscount)
+    let billRate = getBillrate(enterpriseId, resourceTrendJson)
+    let hours = getHours(enterpriseId, resourceTrendJson)
 
     row['STREAM'] = data['__EMPTY_2']
-    row['Enterprise ID'] = enterpriceId
+    row['Enterprise ID'] = enterpriseId
     row['Hermes Role'] = data['__EMPTY_7']
     row['Hermes Level'] = data['__EMPTY_8']
     row['Location Category'] = data['__EMPTY_9']
@@ -99,10 +102,10 @@ function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
     row['Billable Days A'] = data['__EMPTY_25']
     row['Gross Amount A'] = grossAmount
     row['Vol. Discount'] = volDiscount
-    row['Strategic Innov. Fund'] = "N/A"
+    row['Strategic Innov. Fund'] = strategicInnovFund
     row['Net Amount A'] = "N/A"
-    row['Bill Rate'] = "N/A"
-    row['Billable Hours B'] = "N/A"
+    row['Bill Rate'] = billRate
+    row['Billable Hours B'] = hours
     row['Billable Days B'] = "N/A"
     row['Gross Amount B'] = "N/A"
     row['Net Amount B'] = "N/A"
@@ -118,6 +121,16 @@ function getEnterpriseId(fullName, resourceListJson) {
   return resourceItem?.['Enterprise ID'] || "N/A"
 }
 
+function getBillrate(enterpriseId, resourceTrendJson) {
+  let resourceItem = resourceTrendJson.find((item) => item["Name"] == enterpriseId && item["Category"] == "Bill Rate")
+  return resourceItem?.['Quantity'] || "N/A"
+}
+
+function getHours(enterpriseId, resourceTrendJson) {
+  let resourceItem = resourceTrendJson.find((item) => item["Name"] == enterpriseId && item["Category"] == "Hours")
+  return resourceItem?.['Quantity'] || "N/A"
+}
+
 function calculateGrossAmount(onshoreRate, offshoreRate) {
   return (onshoreRate * 1) + (offshoreRate * 1)
 }
@@ -126,6 +139,12 @@ function calculateVolDiscount(grossAmount) {
   let percentage = 5.15
   let percentageToMultiplier = (percentage / 100);
   return grossAmount * percentageToMultiplier
+}
+
+function calculateStrategicInnovFund(grossAmount, volDiscount) {
+  let percentage = 1.93
+  let percentageToMultiplier = (percentage / 100);
+  return (grossAmount+ volDiscount) * percentageToMultiplier
 }
 
 function createExcel() {
