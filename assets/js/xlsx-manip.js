@@ -67,6 +67,11 @@ function getServiceBillingJson(){
   .filter((item) => typeof item['__EMPTY_1'] === 'number')
 };
 
+function getInnovationBillingJson(){
+  // Read Excel Files for Innovation Billing
+  return getFileWorksheetJson("file-2", "myTE Innov bookings")
+};
+
 function getResourceListJson(){
   // Read Excel Files for Resource List
   return getFileWorksheetJson("file-3", "UBS Staff List")
@@ -77,13 +82,44 @@ function getResourceTrendJson(){
   return getFileWorksheetJson("file-4", "Raw Data")
 };
 
-function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
+function getPwaJson(){
+  // Read Excel Files for PWA
+  return getFileWorksheetJson("file-5", "PWAInput")
+};
+
+function createRow(data) {
+  const row = {}
+  row['STREAM'] = data.stream
+  row['Enterprise ID'] = data.enterpriseId
+  row['Hermes Role'] = data.hermesRole
+  row['Hermes Level'] = data.hermesLevel
+  row['Location Category'] = data.locationCategory
+  row['Daily Rate (Onshore)'] = data.onshoreRate
+  row['Daily Rate (Offshore)'] = data.offshoreRate
+  row['Billable Hours A'] = data.billableHoursA
+  row['Billable Days A'] = data.billableDaysA
+  row['Gross Amount A'] = data.grossAmountA
+  row['Vol. Discount'] = data.volDiscount
+  row['Strategic Innov. Fund'] = data.strategicInnovFund
+  row['Net Amount A'] = data.netAmountA
+  row['Bill Rate'] = data.billRate
+  row['Billable Hours B'] = data.billableHoursB
+  row['Billable Days B'] = data.billableDaysB
+  row['Gross Amount B'] = data.grossAmountB
+  row['Net Amount B'] = data.netAmountB
+  row['Billable Days C'] = data.billableDaysC
+  row['Net Amount C'] = data.netAmountC
+
+  return row
+}
+
+function createRowsFromSbr(sbrFileJson, resourceListJson, resourceTrendJson) {
   return sbrFileJson.map((data) => {
-    const row = {}
     let fullName = data['__EMPTY_6']
     let onshoreRate = data['__EMPTY_13']
     let offshoreRate = data['__EMPTY_14']
     let billableDays = data['__EMPTY_25']
+    let locationCategory = data['__EMPTY_9']
     let enterpriseId = getEnterpriseId(fullName, resourceListJson)
     let grossAmount = calculateGrossAmount(onshoreRate, offshoreRate, billableDays)
     let volDiscount = calculateVolDiscount(grossAmount)
@@ -91,32 +127,93 @@ function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
     let hours = getHours(enterpriseId, resourceTrendJson)
     let stream = getStream(data['__EMPTY_2'])
-   
 
-    row['STREAM'] = stream
-    row['Enterprise ID'] = enterpriseId
-    row['Hermes Role'] = data['__EMPTY_7']
-    row['Hermes Level'] = data['__EMPTY_8']
-    row['Location Category'] = data['__EMPTY_9']
-    row['Daily Rate (Onshore)'] = onshoreRate
-    row['Daily Rate (Offshore)'] = offshoreRate
-    row['Billable Hours A'] = data['__EMPTY_24']
-    row['Billable Days A'] = data['__EMPTY_25']
-    row['Gross Amount A'] = grossAmount
-    row['Vol. Discount'] = volDiscount
-    row['Strategic Innov. Fund'] = strategicInnovFund
-    row['Net Amount A'] = "N/A"
-    row['Bill Rate'] = billRate
-    row['Billable Hours B'] = hours
-    row['Billable Days B'] = "N/A"
-    row['Gross Amount B'] = "N/A"
-    row['Net Amount B'] = "N/A"
-    row['Billable Days C'] = "N/A"
-    row['Net Amount C'] = "N/A"
-    
-    return row
+    return createRow({
+      stream: stream,
+      enterpriseId: enterpriseId,
+      hermesRole: data['__EMPTY_7'],
+      hermesLevel: data['__EMPTY_8'],
+      locationCategory: locationCategory,
+      onshoreRate: onshoreRate,
+      offshoreRate: offshoreRate,
+      billableHoursA: data['__EMPTY_32'],
+      billableDaysA: data['__EMPTY_33'],
+      grossAmountA: grossAmount,
+      volDiscount: volDiscount,
+      strategicInnovFund: strategicInnovFund,
+      netAmountA: "N/A",
+      billRate: billRate,
+      billableHoursB: hours,
+      billableDaysB: "N/A",
+      grossAmountB: "N/A",
+      netAmountB: "N/A",
+      billableDaysC: "N/A",
+      netAmountC: "N/A"
+    })
   })
 }
+
+function createRowsFromInnovationBilling(innovationBillingJson, resourceListJson, resourceTrendJson) {
+  return innovationBillingJson.map((data) => {
+    let enterpriseId = data['Enterprise ID']
+    let location = data['Location']
+    let resourceName = data['Resource Name']
+    let stream = data['STREAM']
+    
+    return createRow({
+      stream: stream,
+      enterpriseId: enterpriseId,
+      hermesRole: "N/A",
+      hermesLevel: "N/A",
+      locationCategory: location,
+      onshoreRate: "N/A",
+      offshoreRate: "N/A",
+      billableHoursA: "N/A",
+      billableDaysA: "N/A",
+      grossAmountA: "N/A",
+      volDiscount: "N/A",
+      strategicInnovFund: "N/A",
+      netAmountA: "N/A",
+      billRate: "N/A",
+      billableHoursB: "N/A",
+      billableDaysB: "N/A",
+      grossAmountB: "N/A",
+      netAmountB: "N/A",
+      billableDaysC: "N/A",
+      netAmountC: "N/A"
+    })
+  })
+}
+
+function createRowsFromPwa(pwaJson, resourceListJson, resourceTrendJson) {
+  return pwaJson.map((data) => {
+    let enterpriseId = data['Enterprise ID']
+
+    return createRow({
+      stream: "N/A",
+      enterpriseId: enterpriseId,
+      hermesRole: "N/A",
+      hermesLevel: "N/A",
+      locationCategory: "N/A",
+      onshoreRate: "N/A",
+      offshoreRate: "N/A",
+      billableHoursA: "N/A",
+      billableDaysA: "N/A",
+      grossAmountA: "N/A",
+      volDiscount: "N/A",
+      strategicInnovFund: "N/A",
+      netAmountA: "N/A",
+      billRate: "N/A",
+      billableHoursB: "N/A",
+      billableDaysB: "N/A",
+      grossAmountB: "N/A",
+      netAmountB: "N/A",
+      billableDaysC: "N/A",
+      netAmountC: "N/A"
+    })
+  })
+}
+
 
 function getEnterpriseId(fullName, resourceListJson) {
   let resourceItem = resourceListJson.find((item) => item["Full Name"] == fullName)
@@ -155,14 +252,25 @@ function calculateStrategicInnovFund(grossAmount, volDiscount) {
 
 function createExcel() {
     let serviceBillingJson = getServiceBillingJson();
+    let innovationBillingJson = getInnovationBillingJson();
     let resourceListJson = getResourceListJson();
     let resourceTrendJson = getResourceTrendJson()
-    let outputJson = createRows(serviceBillingJson, resourceListJson, resourceTrendJson)
-    
-    var workbook = xlsx.utils.book_new();
-    var worksheet = xlsx.utils.json_to_sheet(outputJson);
-    xlsx.utils.book_append_sheet(workbook, worksheet, "testSheet");
-    xlsx.writeFile(workbook, "textBook.xlsx");
+    let pwaJson = getPwaJson();
+
+    let sbrRows = createRowsFromSbr(serviceBillingJson, resourceListJson, resourceTrendJson)
+    let innovationBillingRows = createRowsFromInnovationBilling(innovationBillingJson, resourceListJson, resourceTrendJson)
+    let pwaRows = createRowsFromPwa(pwaJson, resourceListJson, resourceTrendJson)
+    let mergedRows = [...sbrRows, ...innovationBillingRows, ...pwaRows]
+
+    console.log(sbrRows)
+    console.log(innovationBillingRows)
+    console.log(pwaRows)
+
+    console.log(mergedRows)
+    // var workbook = xlsx.utils.book_new();
+    // var worksheet = xlsx.utils.json_to_sheet(sbrRows);
+    // xlsx.utils.book_append_sheet(workbook, worksheet, "testSheet");
+    // xlsx.writeFile(workbook, "textBook.xlsx");
 }
 
 
