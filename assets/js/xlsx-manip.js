@@ -19,8 +19,6 @@ function readRL(){
 };
 
 
-
-function createArray(){
   const outputHeader = ["STREAM", "Enterprise ID", "Hermes Role", "Hermes Level", "Location Category", "Daily Rate (Onshore)", "Daily Rate (Onshore)",
                     "Billable Hours (SBR)", "Billable Days (SBR)", "Gross Amount", "Net Amount", "Bill Rate (MME)", "Billable Days (MME)", "Gross Amount", "Net Amount",
                   "Billable Days (Var)", "Net Amount (Var)"];
@@ -35,8 +33,6 @@ function createArray(){
   let dailyrateOff = [];                              // from SBR
   let sbrBillHrs = [];                              // from SBR
   let sbrBillDays = [];                              // from SBR
-
-};
 
 function pushSBRtoArray(range, worksheetSBR, streamValues, resourceName, hermesRole, hermesLevel, locationCat, dailyrateOn, dailyrateOff, sbrBillHrs, sbrBillDays){
   for (let rowNum = 13; rowNum <= range.e.r; rowNum++) {
@@ -191,7 +187,7 @@ function testOutput(){
   };
 
 
-function testExecute(){
+function testFunction(){
     readSBR();
     readRL();
     createArray();
@@ -201,4 +197,4 @@ function testExecute(){
     testOutput();
 };
 
-testExecute();
+testFunction();
