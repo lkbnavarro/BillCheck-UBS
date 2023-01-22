@@ -36,21 +36,6 @@ function pushFile(fileNumber, filePath) {
       }
   }
 }
-// const outputHeader = ["STREAM", "Enterprise ID", "Hermes Role", "Hermes Level", "Location Category", "Daily Rate (Onshore)", "Daily Rate (Onshore)",
-// "Billable Hours (SBR)", "Billable Days (SBR)", "Gross Amount", "Net Amount", "Bill Rate (MME)", "Billable Days (MME)", "Gross Amount", "Net Amount",
-// "Billable Days (Var)", "Net Amount (Var)"];
-
-// let streamValues = [];
-// let resourceName = [];                             // from SBR
-// let resourceFullName = [];                         // from Resource List
-// let enterpriseID = [];                             // from Resource List
-// let hermesRole = [];                               // from SBR
-// let hermesLevel = [];                              // from SBR
-// let locationCat = [];                              // from SBR
-// let dailyrateOn = [];                              // from SBR
-// let dailyrateOff = [];                              // from SBR
-// let sbrBillHrs = [];                              // from SBR
-// let sbrBillDays = [];                              // from SBR
 
 function getFileWorksheetJson(fileId, sheetName) {
   let excelFile = files.find((file) => file?.id == fileId)
@@ -83,36 +68,47 @@ function createRows(sbrFileJson, resourceListJson, resourceTrendJson) {
     let fullName = data['__EMPTY_6']
     let onshoreRate = data['__EMPTY_13']
     let offshoreRate = data['__EMPTY_14']
-    let billableDays = data['__EMPTY_25']
+    let billableDays = data['__EMPTY_33']
     let enterpriseId = getEnterpriseId(fullName, resourceListJson)
-    let grossAmount = calculateGrossAmount(onshoreRate, offshoreRate, billableDays)
-    let volDiscount = calculateVolDiscount(grossAmount)
-    let strategicInnovFund = calculateStrategicInnovFund(grossAmount, volDiscount)
+    let grossAmountA = calculateGrossAmountA(onshoreRate, offshoreRate, billableDays)
+    let volDiscountA = calculatevolDiscountA(grossAmountA)
+    let strategicInnovFundA = calculatestrategicInnovFundA(grossAmountA, volDiscountA)
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
     let hours = getHours(enterpriseId, resourceTrendJson)
     let stream = getStream(data['__EMPTY_2'])
+    let netAmountA = calculateNetAmountA(grossAmountA, volDiscountA, strategicInnovFundA)
+    let grossAmountB = calculateGrossAmountB(hours, billRate)
+    let volDiscountB = calculatevolDiscountB(grossAmountB)
+    let strategicInnovFundB = calculatestrategicInnovFundB(grossAmountB, volDiscountB)
+    let netAmountB = calculateNetAmountB(grossAmountB, volDiscountB, strategicInnovFundB)
+    let location = data['__EMPTY_9']
+    let billDaysMME = getBillDaysMME(location, hours, fullName)
+    let billDaysVar = calculateBillDaysVar(billDaysMME, billableDays)
+    let NetAmountVar = calculateNetAmountVar(netAmountB, netAmountA)
    
 
     row['STREAM'] = stream
     row['Enterprise ID'] = enterpriseId
     row['Hermes Role'] = data['__EMPTY_7']
     row['Hermes Level'] = data['__EMPTY_8']
-    row['Location Category'] = data['__EMPTY_9']
+    row['Location Category'] = location
     row['Daily Rate (Onshore)'] = onshoreRate
     row['Daily Rate (Offshore)'] = offshoreRate
-    row['Billable Hours A'] = data['__EMPTY_24']
-    row['Billable Days A'] = data['__EMPTY_25']
-    row['Gross Amount A'] = grossAmount
-    row['Vol. Discount'] = volDiscount
-    row['Strategic Innov. Fund'] = strategicInnovFund
-    row['Net Amount A'] = "N/A"
+    row['Billable Hours (SBR)'] = data['__EMPTY_32']
+    row['Billable Days (SBR)'] = billableDays
+    row['Gross Amount (SBR)'] = grossAmountA
+    row['Vol. Discount'] = volDiscountA
+    row['Strategic Innov. Fund (SBR)'] = strategicInnovFundA
+    row['Net Amount (SBR)'] = netAmountA
     row['Bill Rate'] = billRate
-    row['Billable Hours B'] = hours
-    row['Billable Days B'] = "N/A"
-    row['Gross Amount B'] = "N/A"
-    row['Net Amount B'] = "N/A"
-    row['Billable Days C'] = "N/A"
-    row['Net Amount C'] = "N/A"
+    row['Billable Hours (MME)'] = hours
+    row['Billable Days (MME)'] = billDaysMME
+    row['Gross Amount (MME)'] = grossAmountB
+    row['Vol. Discount (MME)'] = volDiscountB
+    row['Strategic Innov. Fund (MME)'] = grossAmountB
+    row['Net Amount (MME)'] = netAmountB
+    row['Billable Days (Var)'] = billDaysVar
+    row['Net Amount (Var)'] = NetAmountVar
     
     return row
   })
@@ -137,21 +133,88 @@ function getStream(stream) {
   return (stream == 'PAY & MANAGE LIQUIDITY') ? 'INNOVATION INITIATIVES' : stream
 }
 
-function calculateGrossAmount(onshoreRate, offshoreRate, billableDays) {
+function calculateGrossAmountA(onshoreRate, offshoreRate, billableDays) {
   return (onshoreRate * billableDays) + (offshoreRate * billableDays)
 }
 
-function calculateVolDiscount(grossAmount) {
-  let percentage = 5.15
-  let percentageToMultiplier = (percentage / 100);
-  return grossAmount * percentageToMultiplier
+function calculateGrossAmountB(hours, billRate) {
+  return hours * billRate
 }
 
-function calculateStrategicInnovFund(grossAmount, volDiscount) {
+function calculatevolDiscountA(grossAmountA) {
+  let percentage = 5.15
+  let percentageToMultiplier = (percentage / 100);
+  return grossAmountA * percentageToMultiplier
+}
+
+function calculatevolDiscountB(grossAmountB) {
+  let percentage = 5.15
+  let percentageToMultiplier = (percentage / 100);
+  return grossAmountB * percentageToMultiplier
+}
+
+function calculatestrategicInnovFundA(grossAmountA, volDiscountA) {
   let percentage = 1.93
   let percentageToMultiplier = (percentage / 100);
-  return (grossAmount+ volDiscount) * percentageToMultiplier
+  return (grossAmountA+ volDiscountA) * percentageToMultiplier
 }
+
+function calculatestrategicInnovFundB(grossAmountB, volDiscountB) {
+  let percentage = 1.93
+  let percentageToMultiplier = (percentage / 100);
+  return (grossAmountB+ volDiscountB) * percentageToMultiplier
+}
+
+function calculateNetAmountA(grossAmountA, volDiscountA, strategicInnovFundA) {
+  return grossAmountA+volDiscountA+strategicInnovFundA
+}
+
+function calculateNetAmountB(grossAmountB, volDiscountB, strategicInnovFundB) {
+  return grossAmountB+volDiscountB+strategicInnovFundB
+}
+
+function calculateBillDaysVar(billDaysMME, billableDays) {
+  return billableDays-billDaysMME
+}
+
+function calculateNetAmountVar(netAmountB, netAmountA) {
+  return netAmountB-netAmountA
+}
+
+
+function getBillDaysMME(location, hours, fullName){
+  let result = 0
+  if (fullName == 'Largados, Mickie Rose'){
+    result = hours / 8
+  } else if (fullName == 'Garcia, Julius Armstrong'){
+    result = hours / 9
+  } else {
+    if (location == 'Philippines Offshore'){
+      result = hours / 9
+    } else if (location == 'Switzerland Local'){
+      result = hours / 8
+    } else if (location == 'Philippines Landed in CH'){
+      result = hours / 9
+    } else if (location == 'Philippines Landed in SG'){
+      result = hours / 8
+    } else if (location == 'Singapore Local'){
+      result = hours / 8
+    } else if (location == 'India Local'){
+      result = hours / 9
+    } else if (location == 'Switzerland - Manno Local'){
+      result = hours / 8
+    } else if (location == 'Philippines Landed in HK'){
+      result = hours / 7.5
+    } else if (location == 'Hong Kong Local'){
+      result = hours / 7.5
+    } else if (location == 'India Landed in SG'){
+      result = hours / 8
+    } else {
+      result
+      }
+    }
+  return result
+  }
 
 function createExcel() {
     let serviceBillingJson = getServiceBillingJson();
@@ -161,6 +224,8 @@ function createExcel() {
     
     var workbook = xlsx.utils.book_new();
     var worksheet = xlsx.utils.json_to_sheet(outputJson);
+    worksheet["!cols"] = [ { wch: 40 }, {wch: 30}, {wch:23}, {wch:12}, {wch:22}, {wch:19}, {wch:19}, {wch:18}, {wch:17}, {wch:25}, {wch:25}, 
+      {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}, {wch:25}];
     xlsx.utils.book_append_sheet(workbook, worksheet, "testSheet");
     xlsx.writeFile(workbook, "textBook.xlsx");
 }
