@@ -82,21 +82,21 @@ function createRow(data) {
   row['Hermes Level'] = data.hermesLevel
   row['Location Category'] = data.locationCategory
   row['Daily Rate'] = data.dailyRate
-  row['Billable Hours A'] = data.billableHoursA
-  row['Billable Days A'] = data.billableDaysA
-  row['Gross Amount A'] = data.grossAmountA
-  row['Vol. Discount A'] = data.volDiscountA
-  row['Strategic Innov. Fund A'] = data.strategicInnovFundA
-  row['Net Amount A'] = data.netAmountA
+  row['Billable Hours (SBR)'] = data.billableHoursA
+  row['Billable Days (SBR)'] = data.billableDaysA
+  row['Gross Amount (SBR)'] = data.grossAmountA
+  row['Vol. Discount (SBR)'] = data.volDiscountA
+  row['Strategic Innov. Fund (SBR)'] = data.strategicInnovFundA
+  row['Net Amount (SBR)'] = data.netAmountA
   row['Bill Rate'] = data.billRate
-  row['Billable Hours B'] = data.billableHoursB
-  row['Billable Days B'] = data.billableDaysB
-  row['Gross Amount B'] = data.grossAmountB
-  row['Vol. Discount B'] = data.volDiscountB
-  row['Strategic Innov. Fund B'] = data.strategicInnovFundB
-  row['Net Amount B'] = data.netAmountB
-  row['Billable Days C'] = data.billableDaysC
-  row['Net Amount C'] = data.netAmountC
+  row['Billable Hours (MME)'] = data.billableHoursB
+  row['Billable Days (MME)'] = data.billableDaysB
+  row['Gross Amount (MME)'] = data.grossAmountB
+  row['Vol. Discount (MME)'] = data.volDiscountB
+  row['Strategic Innov. Fund (MME)'] = data.strategicInnovFundB
+  row['Net Amount (MME)'] = data.netAmountB
+  row['Billable Days (Variance)'] = data.billableDaysC
+  row['Net Amount (Variance)'] = data.netAmountC
 
   return row
 }
@@ -160,7 +160,7 @@ function createRowsFromSBR(sbrFileJson, resourceListJson, resourceTrendJson) {
 function createRowsFromPwa(pwaJson, resourceTrendJson) {
   return pwaJson.map((data) => {
 
-    let stream = data['Segment']
+    let stream = getStream(data['Segment'])
     let enterpriseId = data['Enterprise ID']
     let locationCategory = data["OMP Work Location"]
     let dailyRate = data["Daily Rate"]
@@ -213,7 +213,7 @@ function createRowsFromPwa(pwaJson, resourceTrendJson) {
 
 function createRowsFromInnovationBilling(innovationBillingJson, resourceTrendJson) {
   return innovationBillingJson.map((data) => {
-    let stream = data['STREAM']
+    let stream = getStream(data['STREAM'])
     let enterpriseId = data['Enterprise ID']
     let locationCategory = data['Location']
     let dailyRate = data['GROSS daily rate']
@@ -309,21 +309,21 @@ function calculatevolDiscountB(grossAmountB) {
 function calculateStrategicInnovFundA(grossAmountA, volDiscountA) {
   let percentage = 1.93
   let percentageToMultiplier = (percentage / 100);
-  return ((parseInt(grossAmountA) + parseInt(volDiscountA)) * percentageToMultiplier)
+  return (grossAmountA - volDiscountA) * percentageToMultiplier
 }
 
 function calculateStrategicInnovFundB(grossAmountB, volDiscountB) {
   let percentage = 1.93
   let percentageToMultiplier = (percentage / 100);
-  return ((grossAmountB + volDiscountB) * percentageToMultiplier)
+  return ((grossAmountB - volDiscountB) * percentageToMultiplier)
 }
 
 function calculateNetAmountA(grossAmountA, volDiscountA, strategicInnovFundA) {
-  return (grossAmountA + volDiscountA + strategicInnovFundA)
+  return (grossAmountA - volDiscountA - strategicInnovFundA)
 }
 
 function calculateNetAmountB(grossAmountB, volDiscountB, strategicInnovFundB) {
-  return (grossAmountB + volDiscountB + strategicInnovFundB)
+  return (grossAmountB - volDiscountB - strategicInnovFundB)
 }
 
 function calculateBillDaysVar(billableDaysB, billableDaysA) {
@@ -331,7 +331,7 @@ function calculateBillDaysVar(billableDaysB, billableDaysA) {
 }
 
 function calculateNetAmountVar(netAmountB, netAmountA) {
-  return (netAmountA - netAmountB)
+  return Math.abs(netAmountA - netAmountB)
 }
 
 function getBillDaysMME(locationCategory, billableHoursB, fullName) {
@@ -406,17 +406,41 @@ function filterByIdStreamRole(rows) {
 }
 
 function roundToTwoDecimal(number) {
-  return parseFloat(number.toFixed(2))
+  return (typeof number === 'number') ? parseFloat(number.toFixed(2)) : number
 }
 
 function formatRows(array) {
   array.forEach(item => {
-    item['Net Amount C'] = roundToTwoDecimal(item['Net Amount C'])
-    item['Billable Days C'] = roundToTwoDecimal(item['Billable Days C'])
+    item['Daily Rate'] = roundToTwoDecimal(item['Daily Rate'])
+
+    item['Billable Hours (SBR)'] = roundToTwoDecimal(item['Billable Hours (SBR)'])
+    item['Billable Days (SBR)'] = roundToTwoDecimal(item['Billable Days (SBR)'])
+    item['Gross Amount (SBR)'] = roundToTwoDecimal(item['Gross Amount (SBR)'])
+    item['Vol. Discount (SBR)'] = roundToTwoDecimal(item['Vol. Discount (SBR)'])
+    item['Strategic Innov. Fund (SBR)'] = roundToTwoDecimal(item['Strategic Innov. Fund (SBR)'])
+    item['Net Amount (SBR)'] = roundToTwoDecimal(item['Net Amount (SBR)'])
+    item['Bill Rate'] = roundToTwoDecimal(item['Bill Rate'])
+    item['Billable Hours (MME)'] = roundToTwoDecimal(item['Billable Hours (MME)'])
+    item['Billable Days (MME)'] = roundToTwoDecimal(item['Billable Days (MME)'])
+
+    item['Gross Amount (MME)'] = roundToTwoDecimal(item['Gross Amount (MME)'])
+
+    item['Vol. Discount (MME)'] = roundToTwoDecimal(item['Vol. Discount (MME)'])
+
+    item['Strategic Innov. Fund (MME)'] = roundToTwoDecimal(item['Strategic Innov. Fund (MME)'])
+
+    item['Net Amount (MME)'] = roundToTwoDecimal(item['Net Amount (MME)'])
+
+
+    item['Net Amount (Variance)'] = roundToTwoDecimal(item['Net Amount (Variance)'])
+    item['Billable Days (Variance)'] = roundToTwoDecimal(item['Billable Days (Variance)'])
+
   })
 }
 
 function createExcel() {
+  
+  
   let serviceBillingJson = getServiceBillingJson();
   let innovationBillingJson = getInnovationBillingJson();
   let resourceListJson = getResourceListJson();
@@ -438,9 +462,12 @@ function createExcel() {
 
   var workbook = xlsx.utils.book_new();
   var worksheet = xlsx.utils.json_to_sheet(finalArray);
-  worksheet["!cols"] = [{ wch: 40 }, { wch: 20 }, { wch: 23 }, { wch: 12 }, { wch: 22 }, { wch: 19 }, { wch: 13 }, { wch: 18 }, { wch: 17 }, { wch: 25 }, { wch: 25 },
-  { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }];
+  worksheet["!cols"] = [{ wch: 40 }, { wch: 20 }, { wch: 23 }, { wch: 13 }, { wch: 23 }, 
+    { wch: 10 }, { wch: 18 }, { wch: 17 }, { wch: 18 }, { wch: 17 }, 
+    { wch: 24 }, { wch: 16 }, { wch: 9 }, { wch: 19 }, { wch: 19 }, 
+    { wch: 19 }, { wch: 19 }, { wch: 25 }, { wch: 18 }, { wch: 20 }, 
+    { wch: 21 }];
 
-  xlsx.utils.book_append_sheet(workbook, worksheet, "testSheet");
-  xlsx.writeFile(workbook, "textBook.xlsx");
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+  xlsx.writeFile(workbook, "comparison-sheet.xlsx");
 }

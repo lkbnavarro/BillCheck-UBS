@@ -10,10 +10,10 @@ function createMainWindow() {
     title: 'UBS Billing Report Checker',
     // width: isDev ? 1000 : 500,     
     width: 800,
-    height: 550,
+    height: 580,
     autoHideMenuBar: true,
     maxWidth: 800,
-    maxHeight: 550,
+    maxHeight: 580,
     resizable: false,
     webPreferences: {
       nodeIntegration: true,
