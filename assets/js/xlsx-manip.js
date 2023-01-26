@@ -117,7 +117,7 @@ function createRowsFromSBR(sbrFileJson, resourceListJson, resourceTrendJson) {
     let billableDaysA = data['__EMPTY_33']
     let grossAmountA = calculateGrossAmountA(dailyRate, billableDaysA)
     let volDiscountA = calculatevolDiscountA(grossAmountA)
-    let strategicInnovFundA = calculatestrategicInnovFundA(grossAmountA, volDiscountA)
+    let strategicInnovFundA = calculateStrategicInnovFundA(grossAmountA, volDiscountA)
     let netAmountA = calculateNetAmountA(grossAmountA, volDiscountA, strategicInnovFundA)
     // MME
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
@@ -125,7 +125,7 @@ function createRowsFromSBR(sbrFileJson, resourceListJson, resourceTrendJson) {
     let billableDaysB = getBillDaysMME(locationCategory, billableHoursB, fullName)
     let grossAmountB = calculateGrossAmountB(billableHoursB, billRate)
     let volDiscountB = calculatevolDiscountB(grossAmountB)
-    let strategicInnovFundB = calculatestrategicInnovFundB(grossAmountB, volDiscountB)
+    let strategicInnovFundB = calculateStrategicInnovFundB(grossAmountB, volDiscountB)
     let netAmountB = calculateNetAmountB(grossAmountB, volDiscountB, strategicInnovFundB)
     // Variance
     let billDaysVar = calculateBillDaysVar(billableDaysB, billableDaysA)
@@ -169,7 +169,7 @@ function createRowsFromPwa(pwaJson, resourceTrendJson) {
 
     let grossAmountA = calculateGrossAmountA(dailyRate, billableDaysA)
     let volDiscountA = calculatevolDiscountA(grossAmountA)
-    let strategicInnovFundA = calculatestrategicInnovFundA(grossAmountA, volDiscountA)
+    let strategicInnovFundA = calculateStrategicInnovFundA(grossAmountA, volDiscountA)
     let netAmountA = calculateNetAmountA(grossAmountA, volDiscountA, strategicInnovFundA)
     // MME
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
@@ -177,7 +177,7 @@ function createRowsFromPwa(pwaJson, resourceTrendJson) {
     let billableDaysB = getBillDaysPWA(locationCategory, billableHoursB)
     let grossAmountB = calculateGrossAmountB(billableHoursB, billRate)
     let volDiscountB = calculatevolDiscountB(grossAmountB)
-    let strategicInnovFundB = calculatestrategicInnovFundB(grossAmountB, volDiscountB)
+    let strategicInnovFundB = calculateStrategicInnovFundB(grossAmountB, volDiscountB)
     let netAmountB = calculateNetAmountB(grossAmountB, volDiscountB, strategicInnovFundB)
     // Variance
     let billDaysVar = calculateBillDaysVar(billableDaysB, billableDaysA)
@@ -222,7 +222,7 @@ function createRowsFromInnovationBilling(innovationBillingJson, resourceTrendJso
     let billableDaysA = calculateBillDaysAInnovationBilling(billableHoursA, hrsperday)
     let grossAmountA = calculateGrossAmountA(dailyRate, billableDaysA)
     let volDiscountA = calculatevolDiscountA(grossAmountA)
-    let strategicInnovFundA = calculatestrategicInnovFundA(grossAmountA, volDiscountA)
+    let strategicInnovFundA = calculateStrategicInnovFundA(grossAmountA, volDiscountA)
     let netAmountA = calculateNetAmountA(grossAmountA, volDiscountA, strategicInnovFundA)
     // MME
     let billRate = getBillrate(enterpriseId, resourceTrendJson)
@@ -230,7 +230,7 @@ function createRowsFromInnovationBilling(innovationBillingJson, resourceTrendJso
     let billableDaysB = getBillDaysPWA(locationCategory, billableHoursB)
     let grossAmountB = calculateGrossAmountB(billableHoursB, billRate)
     let volDiscountB = calculatevolDiscountB(grossAmountB)
-    let strategicInnovFundB = calculatestrategicInnovFundB(grossAmountB, volDiscountB)
+    let strategicInnovFundB = calculateStrategicInnovFundB(grossAmountB, volDiscountB)
     let netAmountB = calculateNetAmountB(grossAmountB, volDiscountB, strategicInnovFundB)
     // Variance
     let billDaysVar = calculateBillDaysVar(billableDaysB, billableDaysA)
@@ -306,13 +306,13 @@ function calculatevolDiscountB(grossAmountB) {
   return (grossAmountB * percentageToMultiplier)
 }
 
-function calculatestrategicInnovFundA(grossAmountA, volDiscountA) {
+function calculateStrategicInnovFundA(grossAmountA, volDiscountA) {
   let percentage = 1.93
   let percentageToMultiplier = (percentage / 100);
   return ((parseInt(grossAmountA) + parseInt(volDiscountA)) * percentageToMultiplier)
 }
 
-function calculatestrategicInnovFundB(grossAmountB, volDiscountB) {
+function calculateStrategicInnovFundB(grossAmountB, volDiscountB) {
   let percentage = 1.93
   let percentageToMultiplier = (percentage / 100);
   return ((grossAmountB + volDiscountB) * percentageToMultiplier)
