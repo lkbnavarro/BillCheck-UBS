@@ -10,10 +10,10 @@ function createMainWindow() {
     title: 'UBS Billing Report Checker',
     // width: isDev ? 1000 : 500,     
     width: 800,
-    height: 580,
+    height: 520,
     autoHideMenuBar: true,
     maxWidth: 800,
-    maxHeight: 580,
+    maxHeight: 520,
     resizable: false,
     webPreferences: {
       nodeIntegration: true,
@@ -22,9 +22,9 @@ function createMainWindow() {
   });
 
   //open devtools if in dev env
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
+  // if (isDev) {
+  //   mainWindow.webContents.openDevTools();
+  // }
 
   mainWindow.loadFile(path.join(__dirname, './assets/html/index.html'));
 }

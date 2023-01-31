@@ -469,5 +469,6 @@ function createExcel() {
     { wch: 21 }];
 
   xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
-  xlsx.writeFile(workbook, "comparison-sheet.xlsx");
+  xlsx.writeFile(workbook, "excel/comparison-sheet.xlsx");
+  alert("Excel file 'comparison-sheet.xslx' generated successfully!");
 }

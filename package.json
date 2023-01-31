@@ -1,11 +1,12 @@
 {
-  "name": "qualitychecker",
+  "name": "BillChecker",
   "version": "1.0.0",
-  "description": "comparison check to ensure quality of billing report",
+  "description": "Application which compares the quality of billing report.",
   "main": "main.js",
   "scripts": {
     "start": "electronmon .",
-    "compile:sass": "sass --watch scss:assets/css"
+    "compile:sass": "sass --watch scss:assets/css",
+    "build": "electron-packager ."
   },
   "author": "Laurence Kobe Navarro",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
     "electron": "^22.0.0",
+    "electron-packager": "^17.1.1",
     "exceljs": "^4.3.0",
     "path": "^0.12.7",
     "postcss-cli": "^10.1.0",
